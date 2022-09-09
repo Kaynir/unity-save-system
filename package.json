@@ -1,0 +1,15 @@
+{
+  "name": "com.cozydragon.saves",
+  "version": "0.0.1",
+  "displayName": "Advanced Save System",
+  "description": "Модульная система сохранения данных на базе формата Json.",
+  "unity": "2021.3",
+  "keywords": [
+    "cozydragon, save system, saves"
+  ],
+  "author": {
+    "name": "Денис Знов",
+    "email": "kaynir.games@gmail.com",
+    "url": "https://github.com/CozyDragonGames/advanced-save-system"
+  }
+}
