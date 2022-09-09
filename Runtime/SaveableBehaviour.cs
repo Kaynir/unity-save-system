@@ -3,12 +3,10 @@ using UnityEngine;
 
 namespace CozyDragon.Saves
 {
-    public abstract class SaveableBehaviour : MonoBehaviour
+    public abstract class SaveableBehaviour<T> : MonoBehaviour where T : class
     {
-        public static event Action<SaveableBehaviour> OnEnabled;
-        public static event Action<SaveableBehaviour> OnDisabled;
-
-        [field: SerializeField] public string UniqueID { get; private set; } = string.Empty;
+        public static event Action<SaveableBehaviour<T>> OnEnabled;
+        public static event Action<SaveableBehaviour<T>> OnDisabled;
 
         protected virtual void OnEnable()
         {
@@ -20,14 +18,8 @@ namespace CozyDragon.Saves
             OnDisabled?.Invoke(this);
         }
 
-        public abstract SaveableState CaptureState(SaveableState lastState);
+        public abstract void CaptureState(T saveData);
 
-        public abstract void RestoreState(SaveableState state);
-
-        [ContextMenu("Generate ID")]
-        public void GenerateID()
-        {
-            UniqueID = Guid.NewGuid().ToString();
-        }
+        public abstract void RestoreState(T saveData);
     }
 }

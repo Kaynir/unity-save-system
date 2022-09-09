@@ -2,83 +2,68 @@ using UnityEngine;
 
 namespace CozyDragon.Saves
 {
-    public class AdvancedSaveSystem : MonoBehaviour
+    public class AdvancedSaveSystem<T> : MonoBehaviour where T : class
     {
         [SerializeField] private SaveProvider _saveProvider = null;
 
-        private SerializableDictionary<string, SaveableState> _gameData;
+        private T _saveData;
 
         private void Awake()
         {
-            SaveableBehaviour.OnEnabled += LoadState;
-            SaveableBehaviour.OnDisabled += SaveState;
+            SaveableBehaviour<T>.OnEnabled += LoadState;
+            SaveableBehaviour<T>.OnDisabled += SaveState;
+
+            _saveData = GetDefaultSaveData();
         }
 
         private void OnDestroy()
         {
-            SaveableBehaviour.OnEnabled -= LoadState;
-            SaveableBehaviour.OnDisabled -= SaveState;
+            SaveableBehaviour<T>.OnEnabled -= LoadState;
+            SaveableBehaviour<T>.OnDisabled -= SaveState;
         }
 
-        [ContextMenu("Save State")]
         public void SaveState()
         {
-            foreach (SaveableBehaviour saveable in FindSaveables())
+            foreach (SaveableBehaviour<T> saveable in FindSaveables())
             {
                 SaveState(saveable);
             }
         }
 
-        [ContextMenu("Load State")]
         public void LoadState()
         {
-            foreach (SaveableBehaviour saveable in FindSaveables())
+            foreach (SaveableBehaviour<T> saveable in FindSaveables())
             {
                 LoadState(saveable);
             }
         }
 
-        [ContextMenu("Save Data")]
         public void SaveData()
         {
             SaveState();
-            _saveProvider.Save(_gameData);
+
+            _saveProvider.Save(_saveData);
         }
 
-        [ContextMenu("Load Data")]
         public void LoadData()
         {
-            _gameData = _saveProvider.Load<SerializableDictionary<string, SaveableState>>();
+            _saveData = _saveProvider.Load<T>(GetDefaultSaveData());
+
             LoadState();
         }
 
-        private void LoadState(SaveableBehaviour saveable)
+        private void LoadState(SaveableBehaviour<T> saveable) => saveable.RestoreState(_saveData);
+
+        private void SaveState(SaveableBehaviour<T> saveable) => saveable.CaptureState(_saveData);
+
+        protected virtual T GetDefaultSaveData()
         {
-            if (_gameData == null) return;
-            
-            if (_gameData.TryGetValue(saveable.UniqueID, out SaveableState state))
-            {
-                saveable.RestoreState(state);
-            }
+            return default;
         }
 
-        private void SaveState(SaveableBehaviour saveable)
+        private SaveableBehaviour<T>[] FindSaveables()
         {
-            SaveableState lastState = new SaveableState();
-
-            if (_gameData.ContainsKey(saveable.UniqueID))
-            {
-                lastState = _gameData[saveable.UniqueID];
-                _gameData[saveable.UniqueID] = saveable.CaptureState(lastState);
-                return;
-            }
-
-            _gameData.Add(saveable.UniqueID, saveable.CaptureState(lastState));
-        }
-
-        private SaveableBehaviour[] FindSaveables()
-        {
-            return FindObjectsOfType<SaveableBehaviour>();
+            return FindObjectsOfType<SaveableBehaviour<T>>();
         }
     }
 }

@@ -11,9 +11,9 @@ namespace CozyDragon.Saves
         [SerializeField] private string _backupFileName = "data-bak.json";
         [SerializeField] private bool _enableBackup = true;
 
-        public override T Load<T>()
+        public override T Load<T>(T defaultData = default)
         {
-            return Load<T>(GetFullPath(_fileName), _enableBackup);
+            return Load<T>(defaultData, GetFullPath(_fileName), _enableBackup);
         }
 
         public override void Save<T>(T data)
@@ -21,7 +21,7 @@ namespace CozyDragon.Saves
             Save(data, GetFullPath(_fileName), _enableBackup);
         }
 
-        private T Load<T>(string fullPath, bool enableBackup)
+        private T Load<T>(T defaultData, string fullPath, bool enableBackup)
         {
             try
             {
@@ -35,10 +35,10 @@ namespace CozyDragon.Saves
                 if (enableBackup)
                 {
                     Debug.LogWarning($"Trying to restore data from backup file: {_backupFileName}.");
-                    return Load<T>(GetFullPath(_backupFileName), false);
+                    return Load<T>(defaultData, GetFullPath(_backupFileName), false);
                 }
 
-                return default;
+                return defaultData;
             }
         }
 

@@ -6,6 +6,6 @@ namespace CozyDragon.Saves
     {
         public abstract void Save<T>(T data);
 
-        public abstract T Load<T>();
+        public abstract T Load<T>(T defaultData = default);
     }
 }
