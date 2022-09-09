@@ -1,0 +1,14 @@
+{
+    "name": "com.cozydragon.saves",
+    "rootNamespace": "CozyDragon.Saves",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
