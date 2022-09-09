@@ -8,15 +8,13 @@ namespace CozyDragon.Saves
 
         private T _saveData;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             SaveableBehaviour<T>.OnEnabled += LoadState;
             SaveableBehaviour<T>.OnDisabled += SaveState;
-
-            _saveData = GetDefaultSaveData();
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
             SaveableBehaviour<T>.OnEnabled -= LoadState;
             SaveableBehaviour<T>.OnDisabled -= SaveState;
@@ -56,14 +54,14 @@ namespace CozyDragon.Saves
 
         private void SaveState(SaveableBehaviour<T> saveable) => saveable.CaptureState(_saveData);
 
-        protected virtual T GetDefaultSaveData()
-        {
-            return default;
-        }
-
         private SaveableBehaviour<T>[] FindSaveables()
         {
             return FindObjectsOfType<SaveableBehaviour<T>>();
+        }
+
+        protected virtual T GetDefaultSaveData()
+        {
+            return default;
         }
     }
 }
