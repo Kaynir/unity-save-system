@@ -64,13 +64,16 @@ namespace CozyDragon.Saves
 
         private void SaveState(SaveableBehaviour saveable)
         {
+            SaveableState lastState = new SaveableState();
+
             if (_gameData.ContainsKey(saveable.UniqueID))
             {
-                _gameData[saveable.UniqueID] = saveable.CaptureState();
+                lastState = _gameData[saveable.UniqueID];
+                _gameData[saveable.UniqueID] = saveable.CaptureState(lastState);
                 return;
             }
 
-            _gameData.Add(saveable.UniqueID, saveable.CaptureState());
+            _gameData.Add(saveable.UniqueID, saveable.CaptureState(lastState));
         }
 
         private SaveableBehaviour[] FindSaveables()

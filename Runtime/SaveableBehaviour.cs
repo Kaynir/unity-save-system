@@ -20,7 +20,7 @@ namespace CozyDragon.Saves
             OnDisabled?.Invoke(this);
         }
 
-        public abstract SaveableState CaptureState();
+        public abstract SaveableState CaptureState(SaveableState lastState);
 
         public abstract void RestoreState(SaveableState state);
 
