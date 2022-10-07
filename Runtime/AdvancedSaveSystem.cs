@@ -11,13 +11,11 @@ namespace CozyDragon.Saves
         protected virtual void Awake()
         {
             SaveableBehaviour<T>.OnEnabled += LoadState;
-            SaveableBehaviour<T>.OnDisabled += SaveState;
         }
 
         protected virtual void OnDestroy()
         {
             SaveableBehaviour<T>.OnEnabled -= LoadState;
-            SaveableBehaviour<T>.OnDisabled -= SaveState;
         }
 
         public void SaveState()
