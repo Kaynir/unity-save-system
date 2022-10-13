@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace CozyDragon.Saves
+namespace Kaynir.AdvancedSaveSystem
 {
     public abstract class SaveableBehaviour<T> : MonoBehaviour where T : class
     {

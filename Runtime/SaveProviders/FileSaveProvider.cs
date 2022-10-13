@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using UnityEngine;
 
-namespace CozyDragon.Saves
+namespace Kaynir.AdvancedSaveSystem
 {
     public class FileSaveProvider : SaveProvider
     {

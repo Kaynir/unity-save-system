@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CozyDragon.Saves
+namespace Kaynir.AdvancedSaveSystem
 {
     public abstract class SaveProvider : MonoBehaviour
     {

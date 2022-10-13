@@ -1,6 +1,6 @@
 {
-    "name": "com.cozydragon.saves",
-    "rootNamespace": "CozyDragon.Saves",
+    "name": "Kaynir.AdvancedSaveSystem",
+    "rootNamespace": "Kaynir.AdvancedSaveSystem",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
