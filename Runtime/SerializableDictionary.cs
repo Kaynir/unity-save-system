@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Kaynir.AdvancedSaveSystem
+namespace Kaynir.Saves
 {
     [Serializable]
     public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
     {
-        [SerializeField] private List<KeyValuePair<TKey, TValue>> _collection = new List<KeyValuePair<TKey, TValue>>();
+        [SerializeField] private List<SerializablePair<TKey, TValue>> _collection;
 
         public void OnAfterDeserialize()
         {
@@ -21,16 +21,16 @@ namespace Kaynir.AdvancedSaveSystem
 
         public void OnBeforeSerialize()
         {
-            _collection.Clear();
+            _collection = new List<SerializablePair<TKey, TValue>>();
 
             foreach (var item in this)
             {
-                _collection.Add(new KeyValuePair<TKey, TValue>(item.Key, item.Value));
+                _collection.Add(new SerializablePair<TKey, TValue>(item.Key, item.Value));
             }
         }
 
         [Serializable]
-        private struct KeyValuePair<K, V>
+        private struct SerializablePair<K, V>
         {
             [SerializeField] private K _key;
             [SerializeField] private V _value;
@@ -38,7 +38,7 @@ namespace Kaynir.AdvancedSaveSystem
             public K Key => _key;
             public V Value => _value;
 
-            public KeyValuePair(K key, V value)
+            public SerializablePair(K key, V value)
             {
                 _key = key;
                 _value = value;

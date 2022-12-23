@@ -2,31 +2,32 @@ using System;
 using System.IO;
 using UnityEngine;
 
-namespace Kaynir.AdvancedSaveSystem
+namespace Kaynir.Saves
 {
     public class FileSaveProvider : SaveProvider
     {
-        [Header("File Storage Settings:")]
         [SerializeField] private string _fileName = "data.json";
         [SerializeField] private string _backupFileName = "data-bak.json";
         [SerializeField] private bool _enableBackup = true;
 
-        public override T Load<T>(T defaultData = default)
+        public override void Save<T>(T data, OnSaveCompleted onCompleted)
         {
-            return Load<T>(defaultData, GetFullPath(_fileName), _enableBackup);
+            Save(data, GetFullPath(_fileName), _enableBackup, onCompleted);
         }
 
-        public override void Save<T>(T data)
+        public override void Load<T>(OnLoadCompleted<T> onCompleted)
         {
-            Save(data, GetFullPath(_fileName), _enableBackup);
+            Load(GetFullPath(_fileName), _enableBackup, onCompleted);
         }
 
-        private T Load<T>(T defaultData, string fullPath, bool enableBackup)
+        private void Load<T>(string fullPath, bool enableBackup, OnLoadCompleted<T> onCompleted) where T : new()
         {
+            T data = new T();
+
             try
             {
                 string json = File.ReadAllText(fullPath);
-                return JsonUtility.FromJson<T>(json);
+                data = JsonUtility.FromJson<T>(json);
             }
             catch (Exception ex)
             {
@@ -35,14 +36,15 @@ namespace Kaynir.AdvancedSaveSystem
                 if (enableBackup)
                 {
                     Debug.LogWarning($"Trying to restore data from backup file: {_backupFileName}.");
-                    return Load<T>(defaultData, GetFullPath(_backupFileName), false);
+                    Load<T>(GetFullPath(_backupFileName), false, onCompleted);
+                    return;
                 }
-
-                return defaultData;
             }
+            
+            onCompleted?.Invoke(data);
         }
 
-        private void Save<T>(T data, string fullPath, bool enableBackup)
+        private void Save<T>(T data, string fullPath, bool enableBackup, OnSaveCompleted onCompleted)
         {
             try
             {
@@ -51,8 +53,10 @@ namespace Kaynir.AdvancedSaveSystem
 
                 if (enableBackup)
                 {
-                    Save(data, GetFullPath(_backupFileName), false);
+                    Save(data, GetFullPath(_backupFileName), false, null);
                 }
+
+                onCompleted?.Invoke();
             }
             catch (Exception ex)
             {

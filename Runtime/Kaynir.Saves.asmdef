@@ -1,6 +1,6 @@
 {
-    "name": "Kaynir.AdvancedSaveSystem",
-    "rootNamespace": "Kaynir.AdvancedSaveSystem",
+    "name": "Kaynir.Saves",
+    "rootNamespace": "Kaynir.Saves",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,11 +1,13 @@
 using UnityEngine;
 
-namespace Kaynir.AdvancedSaveSystem
+namespace Kaynir.Saves
 {
     public abstract class SaveProvider : MonoBehaviour
     {
-        public abstract void Save<T>(T data);
+        public delegate void OnSaveCompleted();
+        public delegate void OnLoadCompleted<T>(T data);
 
-        public abstract T Load<T>(T defaultData = default);
+        public abstract void Save<T>(T data, OnSaveCompleted onCompleted);
+        public abstract void Load<T>(OnLoadCompleted<T> onCompleted) where T : new();
     }
 }
