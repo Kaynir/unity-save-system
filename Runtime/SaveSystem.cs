@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,20 +8,19 @@ namespace Kaynir.Saves
     {
         public delegate void OnStateChanged(SaveState state);
 
-        public static event OnStateChanged OnGameSaved;
-        public static event OnStateChanged OnGameLoaded;
+        public static event OnStateChanged OnStateSaved;
+        public static event OnStateChanged OnStateLoaded;
 
         [SerializeField] protected SaveProvider _offlineSaveProvider = null;
-
-        public bool IsInitialized => _saveState != null;
 
         private SaveState _saveState;
         private List<SaveableEntity> _saveableList;
 
         private void Awake()
         {
-            _saveState = null;
+            _saveState = new SaveState();
             _saveableList = new List<SaveableEntity>();
+            _saveableList.AddRange(FindObjectsOfType<SaveableEntity>());
 
             SaveableEntity.OnEnabled += SubscribeSaveable;
             SaveableEntity.OnDisabled += UnsubscribeSaveable;
@@ -31,42 +31,55 @@ namespace Kaynir.Saves
             SaveableEntity.OnEnabled -= SubscribeSaveable;
             SaveableEntity.OnDisabled -= UnsubscribeSaveable;
         }
-
-        [ContextMenu("Save Game")]
-        public virtual void SaveGame()
+        
+        public virtual void SaveState(Action onCompleted)
         {
             _saveState.UpdatePlayTime();
             _saveableList.ForEach(e => e.CaptureState(_saveState));
-            _offlineSaveProvider.Save(_saveState, OnSaveCompleted);
+            _offlineSaveProvider.Save(_saveState, () =>
+            {
+                OnSaveCompleted(onCompleted);
+            });
         }
 
-        [ContextMenu("Load Game")]
-        public virtual void LoadGame()
+        [ContextMenu("Save State")]
+        public void SaveState() => SaveState(null);
+
+        public virtual void LoadState(Action onCompleted)
         {
-            _offlineSaveProvider.Load<SaveState>(OnLoadCompleted);
+            _offlineSaveProvider.Load<SaveState>((state) =>
+            {
+                OnLoadCompleted(state, onCompleted);
+            });
         }
 
-        private void OnLoadCompleted(SaveState state)
+        [ContextMenu("Load State")]
+        public void LoadState() => LoadState(null);
+
+        private void OnLoadCompleted(SaveState state, Action callback)
         {
             _saveState = state;
             _saveableList.ForEach(e => e.RestoreState(state));
 
             Debug.Log("Game state is loaded.");
-            OnGameLoaded?.Invoke(_saveState);
+            callback?.Invoke();
+            OnStateLoaded?.Invoke(_saveState);
         }
 
-        private void OnSaveCompleted()
+        private void OnSaveCompleted(Action callback)
         {
             Debug.Log("Game state is saved.");
-            OnGameSaved?.Invoke(_saveState);
+            callback?.Invoke();
+            OnStateSaved?.Invoke(_saveState);
         }
 
         #region Saveable Subscriptions
         private void SubscribeSaveable(SaveableEntity saveable)
         {
+            if (_saveableList.Contains(saveable)) return;
+
             _saveableList.Add(saveable);
 
-            if (!IsInitialized) return;
             RestoreSaveableState(saveable);
         }
 
