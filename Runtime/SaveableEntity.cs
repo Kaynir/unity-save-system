@@ -6,7 +6,6 @@ namespace Kaynir.Saves
     public class SaveableEntity : MonoBehaviour
     {
         public static event Action<SaveableEntity> OnEnabled;
-        public static event Action<SaveableEntity> OnDisabled;
 
         private ISaveable[] _saveables;
 
@@ -17,12 +16,15 @@ namespace Kaynir.Saves
 
         private void OnEnable()
         {
+            SaveSystem.OnSaveRequested += CaptureState;
+            SaveSystem.OnLoadCompleted += RestoreState;
             OnEnabled?.Invoke(this);
         }
 
         private void OnDisable()
         {
-            OnDisabled?.Invoke(this);
+            SaveSystem.OnSaveRequested -= CaptureState;
+            SaveSystem.OnLoadCompleted -= RestoreState;
         }
 
         public void CaptureState(SaveState state)

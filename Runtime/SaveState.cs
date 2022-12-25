@@ -20,28 +20,28 @@ namespace Kaynir.Saves
             _playTime += Time.time;
         }
 
-        public T GetData<T>(string id) where T : new()
+        public T GetData<T>(string key) where T : new()
         {
             try
             {
-                return JsonUtility.FromJson<T>(_data[id]);
+                return JsonUtility.FromJson<T>(_data[key]);
             }
             catch (Exception ex)
             {
-                Debug.LogWarning($"Failed to retrieve data from [{id}] with exception: {ex}.");
+                Debug.LogWarning($"Failed to retrieve data from [{key}] with exception: {ex}.");
                 return new T();
             }
         }
 
-        public T GetData<T>() where T : new() => GetData<T>(GetHash<T>());
+        public T GetData<T>() where T : new() => GetData<T>(GetKey<T>());
 
-        public void SetData<T>(T data, string id)
+        public void SetData<T>(T data, string key)
         {
-            _data[id] = JsonUtility.ToJson(data);
+            _data[key] = JsonUtility.ToJson(data);
         }
 
-        public void SetData<T>(T data) => SetData(data, GetHash<T>());
+        public void SetData<T>(T data) => SetData(data, GetKey<T>());
 
-        private string GetHash<T>() => Hash128.Compute(typeof(T).FullName).ToString();
+        private string GetKey<T>() => typeof(T).FullName;
     }
 }
