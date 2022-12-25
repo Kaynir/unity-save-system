@@ -13,11 +13,13 @@ namespace Kaynir.Saves
 
         [SerializeField] protected SaveProvider _offlineSaveProvider = null;
 
+        public bool IsInitialized { get; private set; }
+
         private SaveState _saveState;
 
         private void Awake()
         {
-            SaveableEntity.OnEnabled += RestoreSaveableState;
+            IsInitialized = false;
         }
 
         private void OnDestroy()
@@ -55,8 +57,16 @@ namespace Kaynir.Saves
         {
             _saveState = state;
 
+            if (!IsInitialized) Initialize();
+
             OnLoadCompleted?.Invoke(_saveState);
             callback?.Invoke();
+        }
+
+        private void Initialize()
+        {
+            IsInitialized = true;
+            SaveableEntity.OnEnabled += RestoreSaveableState;
         }
 
         private void CompleteSave(Action callback)
