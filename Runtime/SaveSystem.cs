@@ -76,10 +76,9 @@ namespace Kaynir.Saves
         #region Saveable Subscriptions
         private void SubscribeSaveable(SaveableEntity saveable)
         {
-            if (!_saveableList.Contains(saveable))
-            {
-                _saveableList.Add(saveable);
-            }
+            if (_saveableList.Contains(saveable)) return;
+
+            _saveableList.Add(saveable);
 
             RestoreSaveableState(saveable);
         }
