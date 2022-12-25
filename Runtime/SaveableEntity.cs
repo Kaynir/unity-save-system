@@ -14,14 +14,14 @@ namespace Kaynir.Saves
             _saveables = GetComponentsInChildren<ISaveable>();
         }
 
-        private void OnEnable()
+        private void Start()
         {
             SaveSystem.OnSaveRequested += CaptureState;
             SaveSystem.OnLoadCompleted += RestoreState;
             OnEnabled?.Invoke(this);
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
             SaveSystem.OnSaveRequested -= CaptureState;
             SaveSystem.OnLoadCompleted -= RestoreState;
