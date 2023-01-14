@@ -11,29 +11,19 @@ namespace Kaynir.Saves
         public static event OnStateChanged OnSaveCompleted;
         public static event OnStateChanged OnLoadCompleted;
 
-        [SerializeField] protected SaveProvider _offlineSaveProvider = null;
+        [SerializeField] private SaveProvider _saveProvider = null;
 
-        public bool IsInitialized { get; private set; }
+        private static SaveState _state = new SaveState();
 
-        private SaveState _saveState;
+        private void Awake() => SaveableEntity.OnInitialized += RestoreSaveableState;
+        
+        private void OnDestroy() => SaveableEntity.OnInitialized -= RestoreSaveableState;
 
-        private void Awake()
+        public void SaveState(Action onCompleted)
         {
-            IsInitialized = false;
-        }
+            OnSaveRequested?.Invoke(_state);
 
-        private void OnDestroy()
-        {
-            SaveableEntity.OnEnabled -= RestoreSaveableState;
-        }
-
-        public virtual void SaveState(Action onCompleted)
-        {
-            _saveState.UpdatePlayTime();
-
-            OnSaveRequested?.Invoke(_saveState);
-
-            _offlineSaveProvider.Save(_saveState, () =>
+            _saveProvider.Save(_state, () =>
             {
                 CompleteSave(onCompleted);
             });
@@ -42,9 +32,9 @@ namespace Kaynir.Saves
         [ContextMenu("Save State")]
         public void SaveState() => SaveState(null);
 
-        public virtual void LoadState(Action onCompleted)
+        public void LoadState(Action onCompleted)
         {
-            _offlineSaveProvider.Load<SaveState>((state) =>
+            _saveProvider.Load<SaveState>((state) =>
             {
                 CompleteLoad(state, onCompleted);
             });
@@ -55,29 +45,21 @@ namespace Kaynir.Saves
 
         private void CompleteLoad(SaveState state, Action callback)
         {
-            _saveState = state;
+            _state = state;
 
-            if (!IsInitialized) Initialize();
-
-            OnLoadCompleted?.Invoke(_saveState);
+            OnLoadCompleted?.Invoke(_state);
             callback?.Invoke();
-        }
-
-        private void Initialize()
-        {
-            IsInitialized = true;
-            SaveableEntity.OnEnabled += RestoreSaveableState;
         }
 
         private void CompleteSave(Action callback)
         {
-            OnSaveCompleted?.Invoke(_saveState);
+            OnSaveCompleted?.Invoke(_state);
             callback?.Invoke();
         }
 
         private void RestoreSaveableState(SaveableEntity saveable)
         {
-            saveable.RestoreState(_saveState);
+            saveable.RestoreState(_state);
         }
     }
 }

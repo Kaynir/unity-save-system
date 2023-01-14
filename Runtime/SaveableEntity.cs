@@ -1,24 +1,26 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Kaynir.Saves
 {
     public class SaveableEntity : MonoBehaviour
     {
-        public static event Action<SaveableEntity> OnEnabled;
+        public static event Action<SaveableEntity> OnInitialized;
 
-        private ISaveable[] _saveables;
+        private List<ISaveable> _saveables;
 
         private void Awake()
         {
-            _saveables = GetComponentsInChildren<ISaveable>();
+            _saveables = GetComponentsInChildren<ISaveable>().ToList();
         }
 
         private void Start()
         {
+            OnInitialized?.Invoke(this);
             SaveSystem.OnSaveRequested += CaptureState;
             SaveSystem.OnLoadCompleted += RestoreState;
-            OnEnabled?.Invoke(this);
         }
 
         private void OnDestroy()
@@ -29,18 +31,12 @@ namespace Kaynir.Saves
 
         public void CaptureState(SaveState state)
         {
-            for (int i = 0; i < _saveables.Length; i++)
-            {
-                _saveables[i].CaptureState(state);
-            }
+            _saveables.ForEach(s => s.CaptureState(state));
         }
 
         public void RestoreState(SaveState state)
         {
-            for (int i = 0; i < _saveables.Length; i++)
-            {
-                _saveables[i].RestoreState(state);
-            }
+            _saveables.ForEach(s => s.RestoreState(state));
         }
     }
 }

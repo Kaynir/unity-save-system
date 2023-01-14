@@ -7,38 +7,35 @@ namespace Kaynir.Saves
     [Serializable]
     public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
     {
-        [SerializeField] private List<SerializablePair<TKey, TValue>> _collection;
+        [SerializeField] private List<KeyValuePair> _collection;
 
         public void OnAfterDeserialize()
         {
             Clear();
 
-            for (int i = 0; i < _collection.Count; i++)
-            {
-                Add(_collection[i].Key, _collection[i].Value);
-            }
+            _collection.ForEach(item => Add(item.Key, item.Value));
         }
 
         public void OnBeforeSerialize()
         {
-            _collection = new List<SerializablePair<TKey, TValue>>();
+            _collection = new List<KeyValuePair>();
 
             foreach (var item in this)
             {
-                _collection.Add(new SerializablePair<TKey, TValue>(item.Key, item.Value));
+                _collection.Add(new KeyValuePair(item.Key, item.Value));
             }
         }
 
         [Serializable]
-        private struct SerializablePair<K, V>
+        private struct KeyValuePair
         {
-            [SerializeField] private K _key;
-            [SerializeField] private V _value;
+            [SerializeField] private TKey _key;
+            [SerializeField] private TValue _value;
 
-            public K Key => _key;
-            public V Value => _value;
+            public TKey Key => _key;
+            public TValue Value => _value;
 
-            public SerializablePair(K key, V value)
+            public KeyValuePair(TKey key, TValue value)
             {
                 _key = key;
                 _value = value;
