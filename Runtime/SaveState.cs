@@ -38,8 +38,12 @@ namespace Kaynir.Saves
         }
 
         public T GetData<T>() where T : new() => GetData<T>(GenerateKey<T>());
-        public int GetData(string key, int defaultValue) => ParseHelper.Parse(key, defaultValue);
-        public float GetData(string key, float defaultValue) => ParseHelper.Parse(key, defaultValue);
+
+        public int GetData(string key, int defaultValue)
+            => ParseHelper.Parse(GetData(key, string.Empty), defaultValue);
+        
+        public float GetData(string key, float defaultValue)
+            => ParseHelper.Parse(GetData(key, string.Empty), defaultValue);
 
         public void SetData(string key, string data) => _data[key] = data;
         public void SetData<T>(string key, T data) where T : new() => SetData(key, JsonUtility.ToJson(data));
