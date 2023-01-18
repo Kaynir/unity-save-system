@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Kaynir.Saves
+namespace Kaynir.Saves.Tools
 {
     public static class ParseHelper
     {

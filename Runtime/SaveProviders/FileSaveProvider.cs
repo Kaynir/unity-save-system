@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using UnityEngine;
 
-namespace Kaynir.Saves
+namespace Kaynir.Saves.Providers
 {
     public class FileSaveProvider : SaveProvider
     {

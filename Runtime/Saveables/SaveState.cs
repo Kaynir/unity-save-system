@@ -1,7 +1,8 @@
 using System;
+using Kaynir.Saves.Tools;
 using UnityEngine;
 
-namespace Kaynir.Saves
+namespace Kaynir.Saves.Saveables
 {
     [Serializable]
     public class SaveState

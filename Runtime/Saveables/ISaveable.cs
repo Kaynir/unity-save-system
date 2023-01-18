@@ -1,4 +1,4 @@
-namespace Kaynir.Saves
+namespace Kaynir.Saves.Saveables
 {
     public interface ISaveable
     {

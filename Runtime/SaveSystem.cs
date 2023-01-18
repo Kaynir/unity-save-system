@@ -1,4 +1,6 @@
 using System;
+using Kaynir.Saves.Providers;
+using Kaynir.Saves.Saveables;
 using UnityEngine;
 
 namespace Kaynir.Saves
@@ -15,9 +17,9 @@ namespace Kaynir.Saves
 
         private static SaveState _state = new SaveState();
 
-        private void Awake() => SaveableEntity.OnInitialized += RestoreSaveableState;
+        private void Awake() => SaveableListener.OnLoaded += LoadListenerState;
         
-        private void OnDestroy() => SaveableEntity.OnInitialized -= RestoreSaveableState;
+        private void OnDestroy() => SaveableListener.OnLoaded -= LoadListenerState;
 
         public void SaveState(Action onCompleted)
         {
@@ -41,7 +43,7 @@ namespace Kaynir.Saves
         }
 
         [ContextMenu("Load State")]
-        public void LoadState() => LoadState(null);
+        public void LoadState() => LoadState((Action)null);
 
         private void CompleteLoad(SaveState state, Action callback)
         {
@@ -57,9 +59,9 @@ namespace Kaynir.Saves
             callback?.Invoke();
         }
 
-        private void RestoreSaveableState(SaveableEntity saveable)
+        private void LoadListenerState(SaveableListener listener)
         {
-            saveable.RestoreState(_state);
+            listener.RestoreState(_state);
         }
     }
 }

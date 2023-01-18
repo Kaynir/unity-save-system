@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Kaynir.Saves
+namespace Kaynir.Saves.Providers
 {
     public abstract class SaveProvider : MonoBehaviour
     {

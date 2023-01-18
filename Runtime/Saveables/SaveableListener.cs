@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Kaynir.Saves
+namespace Kaynir.Saves.Saveables
 {
-    public class SaveableEntity : MonoBehaviour
+    public class SaveableListener : MonoBehaviour
     {
-        public static event Action<SaveableEntity> OnInitialized;
+        public static event Action<SaveableListener> OnLoaded;
 
         private List<ISaveable> _saveables;
 
@@ -18,7 +18,7 @@ namespace Kaynir.Saves
 
         private void Start()
         {
-            OnInitialized?.Invoke(this);
+            OnLoaded?.Invoke(this);
             SaveSystem.OnSaveRequested += CaptureState;
             SaveSystem.OnLoadCompleted += RestoreState;
         }
