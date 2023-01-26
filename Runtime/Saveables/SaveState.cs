@@ -14,44 +14,39 @@ namespace Kaynir.Saves.Saveables
             _data = new SerializableDictionary<string, string>();
         }
 
-        public T GetData<T>(string key) where T : new()
+        #region String Data
+        public string GetString(string key, string defaultValue)
         {
-            try
-            {
-                return JsonUtility.FromJson<T>(_data[key]);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"Failed to retrieve data for [{key}]. Exception: {ex}.");
-                return new T();
-            }
+            if (_data.TryGetValue(key, out string data)) return data;
+
+            Debug.LogWarning($"Retriving default value for missing key: {key}.");
+            return defaultValue;
         }
 
-        public string GetData(string key, string defaultValue)
-        {
-            if (!_data.TryGetValue(key, out string data))
-            {
-                Debug.LogWarning($"String data for [{key}] is missing.");
-                data = defaultValue;
-            }
+        public string GetString(string key) => GetString(key, string.Empty);
+        public void SetString(string key, string value) => _data[key] = value;
+        #endregion
 
-            return data;
-        }
+        #region Integer Data
+        public int GetInt(string key, int defaultValue) => ParseHelper.ParseInt(GetString(key), defaultValue);
+        public int GetInt(string key) => GetInt(key, 0);
+        public void SetInt(string key, int value) => SetString(key, value.ToString());
+        #endregion
 
-        public T GetData<T>() where T : new() => GetData<T>(GenerateKey<T>());
+        #region Float Data
+        public float GetFloat(string key, float defaultValue) => ParseHelper.ParseFloat(GetString(key), defaultValue);
+        public float GetFloat(string key) => GetFloat(key, 0f);
+        public void SetFloat(string key, float value) => SetString(key, value.ToString());
+        #endregion
 
-        public int GetData(string key, int defaultValue)
-            => ParseHelper.Parse(GetData(key, string.Empty), defaultValue);
-        
-        public float GetData(string key, float defaultValue)
-            => ParseHelper.Parse(GetData(key, string.Empty), defaultValue);
-
-        public void SetData(string key, string data) => _data[key] = data;
-        public void SetData<T>(string key, T data) where T : new() => SetData(key, JsonUtility.ToJson(data));
-        public void SetData<T>(T data) where T : new() => SetData(GenerateKey<T>(), data);
-        public void SetData(string key, int data) => SetData(key, data.ToString());
-        public void SetData(string key, float data) => SetData(key, data.ToString());
-
+        #region Custom Data
+        public T GetData<T>(string key, T defaultValue) => ParseHelper.ParseJson(GetString(key), defaultValue);
+        public T GetData<T>(T defaultValue) => GetData<T>(GenerateKey<T>(), defaultValue);
+        public T GetData<T>(string key) where T : new() => GetData<T>(key, new T());
+        public T GetData<T>() where T : new() => GetData<T>(GenerateKey<T>(), new T());
+        public void SetData<T>(string key, T data) => SetString(key, JsonUtility.ToJson(data));
+        public void SetData<T>(T data) => SetData(GenerateKey<T>(), data);
         private string GenerateKey<T>() => typeof(T).Name;
+        #endregion
     }
 }

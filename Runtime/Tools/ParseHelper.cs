@@ -5,25 +5,26 @@ namespace Kaynir.Saves.Tools
 {
     public static class ParseHelper
     {
-        public static int Parse(string s, int defaultValue)
+        public static int ParseInt(string s, int defaultValue)
         {
             if (int.TryParse(s, out int value)) return value;
-
-            LogWarning(typeof(int), s);
             return defaultValue;
         }
 
-        public static float Parse(string s, float defaultValue)
+        public static float ParseFloat(string s, float defaultValue)
         {
             if (float.TryParse(s, out float value)) return value;
-
-            LogWarning(typeof(float), s);
             return defaultValue;
         }
 
-        private static void LogWarning(Type type, string s)
+        public static T ParseJson<T>(string s, T defaultValue)
         {
-            Debug.LogWarning($"Failed to parse {type} from {s}.");
+            try { return JsonUtility.FromJson<T>(s); }
+            catch (Exception ex)
+            {
+                Debug.Log($"Retriving default value with exception: {ex}.");
+                return defaultValue;
+            }
         }
     }
 }

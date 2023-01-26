@@ -7,8 +7,6 @@ namespace Kaynir.Saves.Saveables
 {
     public class SaveableListener : MonoBehaviour
     {
-        public static event Action<SaveableListener> OnLoaded;
-
         private List<ISaveable> _saveables;
 
         private void Awake()
@@ -18,15 +16,15 @@ namespace Kaynir.Saves.Saveables
 
         private void Start()
         {
-            OnLoaded?.Invoke(this);
+            RestoreState(SaveSystem.State);
             SaveSystem.OnSaveRequested += CaptureState;
-            SaveSystem.OnLoadCompleted += RestoreState;
+            SaveSystem.OnStateLoaded += RestoreState;
         }
 
         private void OnDestroy()
         {
             SaveSystem.OnSaveRequested -= CaptureState;
-            SaveSystem.OnLoadCompleted -= RestoreState;
+            SaveSystem.OnStateLoaded -= RestoreState;
         }
 
         public void CaptureState(SaveState state)

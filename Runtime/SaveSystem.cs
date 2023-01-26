@@ -10,58 +10,49 @@ namespace Kaynir.Saves
         public delegate void OnStateChanged(SaveState state);
 
         public static event OnStateChanged OnSaveRequested;
-        public static event OnStateChanged OnSaveCompleted;
-        public static event OnStateChanged OnLoadCompleted;
+        public static event OnStateChanged OnStateSaved;
+        public static event OnStateChanged OnStateLoaded;
 
         [SerializeField] private SaveProvider _saveProvider = null;
 
-        private static SaveState _state = new SaveState();
+        public static SaveState State { get; private set; } = new SaveState();
 
-        private void Awake() => SaveableListener.OnLoaded += LoadListenerState;
-        
-        private void OnDestroy() => SaveableListener.OnLoaded -= LoadListenerState;
-
-        public void SaveState(Action onCompleted)
+        public void Save(Action onCompleted)
         {
-            OnSaveRequested?.Invoke(_state);
+            OnSaveRequested?.Invoke(State);
 
-            _saveProvider.Save(_state, () =>
+            _saveProvider.Save(State, () =>
             {
-                CompleteSave(onCompleted);
+                OnSaveCompleted(onCompleted);
             });
         }
 
-        [ContextMenu("Save State")]
-        public void SaveState() => SaveState(null);
+        [ContextMenu("Save")]
+        public void Save() => Save(null);
 
-        public void LoadState(Action onCompleted)
+        public void Load(Action onCompleted)
         {
             _saveProvider.Load<SaveState>((state) =>
             {
-                CompleteLoad(state, onCompleted);
+                OnLoadCompleted(state, onCompleted);
             });
         }
 
-        [ContextMenu("Load State")]
-        public void LoadState() => LoadState((Action)null);
+        [ContextMenu("Load")]
+        public void Load() => Load(null);
 
-        private void CompleteLoad(SaveState state, Action callback)
+        private void OnLoadCompleted(SaveState state, Action callback)
         {
-            _state = state;
+            State = state;
 
-            OnLoadCompleted?.Invoke(_state);
+            OnStateLoaded?.Invoke(State);
             callback?.Invoke();
         }
 
-        private void CompleteSave(Action callback)
+        private void OnSaveCompleted(Action callback)
         {
-            OnSaveCompleted?.Invoke(_state);
+            OnStateSaved?.Invoke(State);
             callback?.Invoke();
-        }
-
-        private void LoadListenerState(SaveableListener listener)
-        {
-            listener.RestoreState(_state);
         }
     }
 }
