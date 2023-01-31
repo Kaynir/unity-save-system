@@ -19,7 +19,11 @@ namespace Kaynir.Saves.Tools
 
         public static T ParseJson<T>(string s, T defaultValue)
         {
-            try { return JsonUtility.FromJson<T>(s); }
+            try
+            {
+                if (string.IsNullOrEmpty(s)) throw new Exception("Unable to parse empty json string.");
+                return JsonUtility.FromJson<T>(s);
+            }
             catch (Exception ex)
             {
                 Debug.Log($"Retriving default value with exception: {ex}.");
