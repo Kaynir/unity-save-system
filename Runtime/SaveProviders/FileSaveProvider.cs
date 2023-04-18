@@ -10,17 +10,17 @@ namespace Kaynir.Saves.Providers
         [SerializeField] private string _backupFileName = "data-bak.json";
         [SerializeField] private bool _enableBackup = true;
 
-        public override void Save<T>(T data, OnSaveCompleted onCompleted)
+        public override void Save<T>(T data, Action onComplete)
         {
-            Save(data, GetFullPath(_fileName), _enableBackup, onCompleted);
+            Save(data, GetFullPath(_fileName), _enableBackup, onComplete);
         }
 
-        public override void Load<T>(OnLoadCompleted<T> onCompleted)
+        public override void Load<T>(Action<T> onComplete)
         {
-            Load(GetFullPath(_fileName), _enableBackup, onCompleted);
+            Load(GetFullPath(_fileName), _enableBackup, onComplete);
         }
 
-        private void Load<T>(string fullPath, bool enableBackup, OnLoadCompleted<T> onCompleted) where T : new()
+        private void Load<T>(string fullPath, bool enableBackup, Action<T> onComplete) where T : new()
         {
             T data = new T();
 
@@ -36,15 +36,15 @@ namespace Kaynir.Saves.Providers
                 if (enableBackup)
                 {
                     Debug.LogWarning($"Trying to restore data from backup file: {_backupFileName}.");
-                    Load<T>(GetFullPath(_backupFileName), false, onCompleted);
+                    Load<T>(GetFullPath(_backupFileName), false, onComplete);
                     return;
                 }
             }
             
-            onCompleted?.Invoke(data);
+            onComplete?.Invoke(data);
         }
 
-        private void Save<T>(T data, string fullPath, bool enableBackup, OnSaveCompleted onCompleted)
+        private void Save<T>(T data, string fullPath, bool enableBackup, Action onComplete)
         {
             try
             {
@@ -56,7 +56,7 @@ namespace Kaynir.Saves.Providers
                     Save(data, GetFullPath(_backupFileName), false, null);
                 }
 
-                onCompleted?.Invoke();
+                onComplete?.Invoke();
             }
             catch (Exception ex)
             {
