@@ -4,6 +4,7 @@ mergeInto(LibraryManager.library, {
     var device = ysdk.deviceInfo.type;
     var bufferSize = lengthBytesUTF8(device) + 1;
     var buffer = _malloc(bufferSize);
+    console.log('Detected device type:', device);
     stringToUTF8(device, buffer, bufferSize);
     return buffer;
   },
@@ -12,6 +13,7 @@ mergeInto(LibraryManager.library, {
     var language = ysdk.environment.i18n.lang;
     var bufferSize = lengthBytesUTF8(language) + 1;
     var buffer = _malloc(bufferSize);
+    console.log('Detected language:', language);
     stringToUTF8(language, buffer, bufferSize);
     return buffer;
   },
@@ -20,6 +22,7 @@ mergeInto(LibraryManager.library, {
     var dataString = UTF8ToString(data);
     var dataObj = JSON.parse(dataString);
     player.setData(dataObj).then(() => {
+      console.log('Data saved.');
       gameInstance.SendMessage('YandexSDK', 'OnDataSaved');
     });
   },
@@ -27,7 +30,19 @@ mergeInto(LibraryManager.library, {
   LoadDataExtern: function () {
     player.getData().then(data => {
       var dataString = JSON.stringify(data);
+      console.log('Data loaded.');
       gameInstance.SendMessage('YandexSDK', 'OnDataLoaded', dataString);
+    });
+  },
+
+  SetLeaderboardExtern: function (boardID, value) {
+    ysdk.isAvailableMethod('leaderboards.setLeaderboardScore').then(result => {
+      if (result === true) {
+          ysdk.getLeaderboards().then(lb => {
+          lb.setLeaderboardScore(boardID, value);
+          console.log('Leaderboard updated.');
+        });
+      };
     });
   },
 

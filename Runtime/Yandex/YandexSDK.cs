@@ -20,6 +20,9 @@ namespace Kaynir.Yandex
         private static extern void LoadDataExtern();
 
         [DllImport("__Internal")]
+        private static extern void SetLeaderboardExtern(string boardID, int value);
+
+        [DllImport("__Internal")]
         private static extern void ShowFullscreenAdvExtern();
 
         [DllImport("__Internal")]
@@ -63,6 +66,11 @@ namespace Kaynir.Yandex
         {
             _onDataLoaded = onComplete;
             LoadDataExtern();
+        }
+
+        public void SetLeaderboard(string boardID, int value)
+        {
+            SetLeaderboardExtern(boardID, value);
         }
 
         public void ShowFullscreenAdv()
