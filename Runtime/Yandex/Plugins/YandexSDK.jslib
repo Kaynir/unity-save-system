@@ -1,5 +1,21 @@
 mergeInto(LibraryManager.library, {
 
+  GetDeviceExtern: function () {
+    var device = ysdk.deviceInfo.type;
+    var bufferSize = lengthBytesUTF8(device) + 1;
+    var buffer = _malloc(bufferSize);
+    stringToUTF8(device, buffer, bufferSize);
+    return buffer;
+  },
+
+  GetLanguageExtern: function () {
+    var language = ysdk.environment.i18n.lang;
+    var bufferSize = lengthBytesUTF8(language) + 1;
+    var buffer = _malloc(bufferSize);
+    stringToUTF8(language, buffer, bufferSize);
+    return buffer;
+  },
+
   SaveDataExtern: function (data) {
     var dataString = UTF8ToString(data);
     var dataObj = JSON.parse(dataString);
