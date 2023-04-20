@@ -39,8 +39,9 @@ mergeInto(LibraryManager.library, {
     ysdk.isAvailableMethod('leaderboards.setLeaderboardScore').then(result => {
       if (result === true) {
           ysdk.getLeaderboards().then(lb => {
-          lb.setLeaderboardScore(boardID, value);
-          console.log('Leaderboard updated.');
+            lb.setLeaderboardScore(UTF8ToString(boardID), value).then(() => {
+              console.log('Leaderboard updated.');
+            });
         });
       };
     });
