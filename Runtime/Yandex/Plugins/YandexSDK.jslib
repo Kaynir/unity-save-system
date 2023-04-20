@@ -68,13 +68,15 @@ mergeInto(LibraryManager.library, {
           },
           onRewarded: () => {
             console.log('Video adv rewarded.');
-            gameInstance.SendMessage('YandexSDK', 'OnAdvRewarded');
+            gameInstance.SendMessage('YandexSDK', 'OnAdvRewarded', 1);
           },
           onClose: () => {
             console.log('Video adv closed.');
+            gameInstance.SendMessage('YandexSDK', 'OnAdvRewarded', 0);
           },
           onError: (error) => {
             console.log('Video adv opened with error:', error);
+            gameInstance.SendMessage('YandexSDK', 'OnAdvRewarded', -1);
           }
       }
     });

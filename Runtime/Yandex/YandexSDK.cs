@@ -54,7 +54,7 @@ namespace Kaynir.Yandex
 
         private Action _onDataSaved;
         private Action<string> _onDataLoaded;
-        private Action _onAdvRewarded;
+        private Action<int> _onAdvRewarded;
 
         public void SaveData(string data, Action onComplete)
         {
@@ -78,7 +78,7 @@ namespace Kaynir.Yandex
             ShowFullscreenAdvExtern();
         }
 
-        public void ShowRewardedAdv(Action onRewarded)
+        public void ShowRewardedAdv(Action<int> onRewarded)
         {
             _onAdvRewarded = onRewarded;
             ShowRewardedAdvExtern();
@@ -107,10 +107,10 @@ namespace Kaynir.Yandex
             _onDataLoaded = null;
         }
 
-        private void OnAdvRewarded()
+        private void OnAdvRewarded(int value)
         {
-            Debug.Log($"Video adv rewarded.");
-            _onAdvRewarded?.Invoke();
+            Debug.Log($"Video adv rewarded with value: {value}.");
+            _onAdvRewarded?.Invoke(value);
             _onAdvRewarded = null;
         }
     }
