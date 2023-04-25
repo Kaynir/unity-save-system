@@ -1,34 +1,10 @@
 using System;
-using System.Runtime.InteropServices;
 using UnityEngine;
 
 namespace Kaynir.Yandex
 {
     public class YandexSDK : MonoBehaviour
     {
-        #region JSLib Methods
-        [DllImport("__Internal")]
-        private static extern string GetDeviceExtern();
-
-        [DllImport("__Internal")]
-        private static extern string GetLanguageExtern();
-
-        [DllImport("__Internal")]
-        private static extern void SaveDataExtern(string data);
-
-        [DllImport("__Internal")]
-        private static extern void LoadDataExtern();
-
-        [DllImport("__Internal")]
-        private static extern void SetLeaderboardExtern(string boardID, int value);
-
-        [DllImport("__Internal")]
-        private static extern void ShowFullscreenAdvExtern();
-
-        [DllImport("__Internal")]
-        private static extern void ShowRewardedAdvExtern();
-        #endregion
-
         #region Singleton
         public static YandexSDK Instance
         {
@@ -50,6 +26,7 @@ namespace Kaynir.Yandex
         }
         #endregion
 
+        public ConnectionMode ConnectionMode { get; private set; }
         public PlayerInfo PlayerInfo { get; private set; }
 
         private Action _onDataSaved;
@@ -59,38 +36,58 @@ namespace Kaynir.Yandex
         public void SaveData(string data, Action onComplete)
         {
             _onDataSaved = onComplete;
-            SaveDataExtern(data);
+            YandexService.SaveData(data);
         }
 
         public void LoadData(Action<string> onComplete)
         {
             _onDataLoaded = onComplete;
-            LoadDataExtern();
+            YandexService.LoadData();
         }
 
-        public void SetLeaderboard(string boardID, int value)
+        public void SetLeaderboard(string id, int value)
         {
-            SetLeaderboardExtern(boardID, value);
+            if (ConnectionMode != ConnectionMode.Online)
+            {
+                Debug.LogWarning($"Can't access leaderboards in mode: {ConnectionMode}.");
+                return;
+            }
+
+            YandexService.SetLeaderboard(id, value);
         }
 
         public void ShowFullscreenAdv()
         {
-            ShowFullscreenAdvExtern();
+            if (ConnectionMode != ConnectionMode.Online)
+            {
+                Debug.LogWarning($"Can't show fullscreen adv in mode: {ConnectionMode}.");
+                return;
+            }
+
+            YandexService.ShowFullscreenAdv();
         }
 
         public void ShowRewardedAdv(Action<int> onRewarded)
         {
             _onAdvRewarded = onRewarded;
-            ShowRewardedAdvExtern();
+
+            switch (ConnectionMode)
+            {
+                default: OnAdvRewarded(1); break;
+                case ConnectionMode.Offline: OnAdvRewarded(-1); break;
+                case ConnectionMode.Online: YandexService.ShowRewardedAdv(); break;
+            }
         }
 
         private void Initialize()
         {
-            PlayerInfo = new PlayerInfo()
-            {
-                deviceType = YandexConsts.GetDevice(GetDeviceExtern()),
-                language = YandexConsts.GetLanguage(GetLanguageExtern())
-            };
+            ConnectionMode = Debug.isDebugBuild
+            ? ConnectionMode.Debug
+            : (ConnectionMode)YandexService.GetConnectionStatus();
+
+            PlayerInfo = ConnectionMode == ConnectionMode.Online
+            ? new PlayerInfo(YandexService.GetDevice(), YandexService.GetLanguage())
+            : new PlayerInfo(Application.isMobilePlatform, Application.systemLanguage);
         }
 
         private void OnDataSaved()
