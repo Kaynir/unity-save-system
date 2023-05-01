@@ -46,24 +46,24 @@ namespace Kaynir.Yandex
         public static void LoadData() => YandexService.LoadData();
         public static void SaveData(string data) => YandexService.SaveData(data);
 
-        public void SetLeaderboard(string id, int value)
+        public static void SetLeaderboard(string id, int value)
         {
             if (Status != SDKStatus.Active) return;
             YandexService.SetLeaderboard(id, value);
         }
 
-        public void ShowFullscreenAdv()
+        public static void ShowFullscreenAdv()
         {
             if (Status != SDKStatus.Active) return;
             YandexService.ShowFullscreenAdv();
         }
 
-        public void ShowRewardedAdv(Action<int> onRewarded)
+        public static void ShowRewardedAdv(Action<int> onRewarded)
         {
             switch (Status)
             {
-                case SDKStatus.Debug: OnVideoAdvRewarded(1); break;
-                case SDKStatus.Inactive: OnVideoAdvRewarded(-1); break;
+                case SDKStatus.Debug: _instance.OnVideoAdvRewarded(1); break;
+                case SDKStatus.Inactive: _instance.OnVideoAdvRewarded(-1); break;
                 case SDKStatus.Active: YandexService.ShowRewardedAdv(); break;
             }
         }
