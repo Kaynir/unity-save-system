@@ -48,5 +48,10 @@ namespace Kaynir.Saves.Saveables
         public void SetData<T>(T data) => SetData(GenerateKey<T>(), data);
         private string GenerateKey<T>() => typeof(T).Name;
         #endregion
+
+        #region Json Conversions
+        public string ToJson() => JsonUtility.ToJson(this);
+        public static SaveState FromJson(string json) => ParseHelper.ParseJson(json, new SaveState());
+        #endregion
     }
 }

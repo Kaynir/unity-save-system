@@ -1,6 +1,6 @@
-namespace Kaynir.Yandex
+namespace Kaynir.Yandex.Enums
 {
-    public enum DeviceType
+    public enum YaDeviceType
     {
         Desktop,
         Mobile,

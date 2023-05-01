@@ -1,4 +1,6 @@
 using System;
+using Kaynir.Yandex.Enums;
+using Kaynir.Yandex.Tools;
 using UnityEngine;
 
 namespace Kaynir.Yandex
@@ -6,10 +8,10 @@ namespace Kaynir.Yandex
     [Serializable]
     public struct PlayerInfo
     {
-        public DeviceType deviceType;
+        public YaDeviceType deviceType;
         public SystemLanguage language;
 
-        public PlayerInfo(DeviceType deviceType, SystemLanguage language)
+        public PlayerInfo(YaDeviceType deviceType, SystemLanguage language)
         {
             this.deviceType = deviceType;
             this.language = language;
@@ -23,7 +25,7 @@ namespace Kaynir.Yandex
 
         public PlayerInfo(bool isMobile, SystemLanguage language)
         {
-            this.deviceType = isMobile ? DeviceType.Mobile : DeviceType.Desktop;
+            this.deviceType = isMobile ? YaDeviceType.Mobile : YaDeviceType.Desktop;
             this.language = language;
         }
     }

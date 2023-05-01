@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Kaynir.Yandex.Enums;
 
-namespace Kaynir.Yandex
+namespace Kaynir.Yandex.Tools
 {
     public static class YandexConsts
     {
@@ -12,12 +13,12 @@ namespace Kaynir.Yandex
             { "tr", SystemLanguage.Turkish }
         };
 
-        private static Dictionary<string, DeviceType> _devices = new Dictionary<string, DeviceType>()
+        private static Dictionary<string, YaDeviceType> _devices = new Dictionary<string, YaDeviceType>()
         {
-            { "desktop", DeviceType.Desktop },
-            { "mobile", DeviceType.Mobile },
-            { "tablet", DeviceType.Tablet },
-            { "tv", DeviceType.TV }
+            { "desktop", YaDeviceType.Desktop },
+            { "mobile", YaDeviceType.Mobile },
+            { "tablet", YaDeviceType.Tablet },
+            { "tv", YaDeviceType.TV }
         };
 
         public static SystemLanguage GetLanguage(string languageID)
@@ -27,11 +28,11 @@ namespace Kaynir.Yandex
             : SystemLanguage.English;
         }
 
-        public static DeviceType GetDevice(string deviceID)
+        public static YaDeviceType GetDevice(string deviceID)
         {
             return _devices.ContainsKey(deviceID)
             ? _devices[deviceID]
-            : DeviceType.Desktop;
+            : YaDeviceType.Desktop;
         }
     }
 }

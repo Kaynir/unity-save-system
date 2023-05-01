@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace Kaynir.Yandex
+namespace Kaynir.Yandex.Tools
 {
     public static class YandexService
     {

@@ -17,14 +17,14 @@ namespace Kaynir.Saves.Saveables
         private void Start()
         {
             RestoreState(SaveSystem.State);
-            SaveSystem.OnSaveRequested += CaptureState;
-            SaveSystem.OnStateLoaded += RestoreState;
+            SaveSystem.SaveRequested += CaptureState;
+            SaveSystem.StateLoaded += RestoreState;
         }
 
         private void OnDestroy()
         {
-            SaveSystem.OnSaveRequested -= CaptureState;
-            SaveSystem.OnStateLoaded -= RestoreState;
+            SaveSystem.SaveRequested -= CaptureState;
+            SaveSystem.StateLoaded -= RestoreState;
         }
 
         public void CaptureState(SaveState state)

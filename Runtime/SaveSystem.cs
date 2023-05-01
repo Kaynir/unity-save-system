@@ -1,58 +1,69 @@
 using System;
-using Kaynir.Saves.Providers;
+using Kaynir.Saves.DataStorages;
 using Kaynir.Saves.Saveables;
-using UnityEngine;
 
 namespace Kaynir.Saves
 {
-    public class SaveSystem : MonoBehaviour
+    public static class SaveSystem
     {
-        public delegate void OnStateChanged(SaveState state);
+        public delegate void StateChanged(SaveState state);
 
-        public static event OnStateChanged OnSaveRequested;
-        public static event OnStateChanged OnStateSaved;
-        public static event OnStateChanged OnStateLoaded;
+        public static event StateChanged SaveRequested;
+        public static event StateChanged StateSaved;
+        public static event StateChanged StateLoaded;
 
-        [SerializeField] private SaveProvider _saveProvider = null;
+        public static SaveState State { get; private set; }
+        public static IDataStorage Storage { get; private set; }
 
-        public static SaveState State { get; private set; } = new SaveState();
-
-        public void Save(Action onCompleted)
+        public static void Initialize(IDataStorage storage)
         {
-            OnSaveRequested?.Invoke(State);
+            State = new SaveState();
+            Storage = storage;
+        }
 
-            _saveProvider.Save(State, () =>
+        public static void Load(SaveState state, Action onComplete)
+        {
+            OnStateLoaded(state, onComplete);
+        }
+
+        public static void Load(Action onComplete)
+        {
+            Storage.GetData((json) => 
             {
-                OnSaveCompleted(onCompleted);
+                Load(SaveState.FromJson(json),
+                     onComplete);
             });
         }
 
-        [ContextMenu("Save")]
-        public void Save() => Save(null);
+        public static void Load() => Load(null);
 
-        public void Load(Action onCompleted)
+        public static void Save(SaveState state, Action onComplete)
         {
-            _saveProvider.Load<SaveState>((state) =>
+            Storage.SetData(state.ToJson(), () =>
             {
-                OnLoadCompleted(state, onCompleted);
+                OnStateSaved(onComplete);
             });
         }
 
-        [ContextMenu("Load")]
-        public void Load() => Load(null);
+        public static void Save(Action onComplete)
+        {
+            SaveRequested?.Invoke(State);
+            Save(State, onComplete);
+        }
 
-        private void OnLoadCompleted(SaveState state, Action callback)
+        public static void Save() => Save(null);
+
+        private static void OnStateLoaded(SaveState state, Action onComplete)
         {
             State = state;
-
-            OnStateLoaded?.Invoke(State);
-            callback?.Invoke();
+            StateLoaded?.Invoke(State);
+            onComplete?.Invoke();
         }
 
-        private void OnSaveCompleted(Action callback)
+        private static void OnStateSaved(Action onComplete)
         {
-            OnStateSaved?.Invoke(State);
-            callback?.Invoke();
+            StateSaved?.Invoke(State);
+            onComplete?.Invoke();
         }
     }
 }

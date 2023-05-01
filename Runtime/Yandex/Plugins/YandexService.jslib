@@ -55,8 +55,13 @@ mergeInto(LibraryManager.library, {
   ShowFullscreenAdv: function () {
     ysdk.adv.showFullscreenAdv({
       callbacks: {
+        onOpen: () => {
+          console.log('Fullscreen adv opened.');
+          gameInstance.SendMessage('YandexSDK', 'OnFullscreenAdvOpened');
+        },
         onClose: function(wasShown) {
-          console.log('Fullscreen adv closed with result:', wasShown)
+          console.log('Fullscreen adv closed with result:', wasShown);
+          gameInstance.SendMessage('YandexSDK', 'OnFullscreenAdvClosed');
         },
         onError: function(error) {
           console.log('Fullscreen adv opened with error:', error);
@@ -70,18 +75,19 @@ mergeInto(LibraryManager.library, {
       callbacks: {
         onOpen: () => {
           console.log('Video adv opened.');
+          gameInstance.SendMessage('YandexSDK', 'OnVideoAdvOpened');
         },
         onRewarded: () => {
           console.log('Video adv rewarded.');
-          gameInstance.SendMessage('YandexSDK', 'OnAdvRewarded', 1);
+          gameInstance.SendMessage('YandexSDK', 'OnVideoAdvRewarded', 1);
         },
         onClose: () => {
           console.log('Video adv closed.');
-          gameInstance.SendMessage('YandexSDK', 'OnAdvRewarded', 0);
+          gameInstance.SendMessage('YandexSDK', 'OnVideoAdvRewarded', 0);
         },
         onError: (error) => {
           console.log('Video adv opened with error:', error);
-          gameInstance.SendMessage('YandexSDK', 'OnAdvRewarded', -1);
+          gameInstance.SendMessage('YandexSDK', 'OnVideoAdvRewarded', -1);
         }
       }
     });

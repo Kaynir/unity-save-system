@@ -1,114 +1,80 @@
 using System;
+using Kaynir.Yandex.Enums;
+using Kaynir.Yandex.Tools;
 using UnityEngine;
 
 namespace Kaynir.Yandex
 {
     public class YandexSDK : MonoBehaviour
     {
-        #region Singleton
-        public static YandexSDK Instance
-        {
-            get
-            {
-                if (!_instance) CreateInstance();
-                return _instance;
-            }
-        }
-
+        #region Initialization
         private static YandexSDK _instance;
+
+        public static void Initialize()
+        {
+            CreateInstance();
+
+            Status = Debug.isDebugBuild
+            ? SDKStatus.Debug
+            : (SDKStatus)YandexService.GetConnectionStatus();
+
+            PlayerInfo = Status == SDKStatus.Active
+            ? new PlayerInfo(YandexService.GetDevice(), YandexService.GetLanguage())
+            : new PlayerInfo(Application.isMobilePlatform, Application.systemLanguage);
+        }
 
         private static void CreateInstance()
         {
             _instance = new GameObject().AddComponent<YandexSDK>();
             _instance.name = nameof(YandexSDK);
-            _instance.Initialize();
             DontDestroyOnLoad(_instance.gameObject);
         }
         #endregion
 
-        public ConnectionMode ConnectionMode { get; private set; }
-        public PlayerInfo PlayerInfo { get; private set; }
+        public static event Action<string> DataLoaded;
+        public static event Action DataSaved;
 
-        private Action _onDataSaved;
-        private Action<string> _onDataLoaded;
-        private Action<int> _onAdvRewarded;
+        public static event Action VideoAdvOpened;
+        public static event Action<RewardResult> VideoAdvRewarded;
 
-        public void SaveData(string data, Action onComplete)
-        {
-            _onDataSaved = onComplete;
-            YandexService.SaveData(data);
-        }
+        public static event Action FullscreenAdvOpened;
+        public static event Action FullscreenAdvClosed;
 
-        public void LoadData(Action<string> onComplete)
-        {
-            _onDataLoaded = onComplete;
-            YandexService.LoadData();
-        }
+        public static SDKStatus Status { get; private set; }
+        public static PlayerInfo PlayerInfo { get; private set; }
+
+        public static void LoadData() => YandexService.LoadData();
+        public static void SaveData(string data) => YandexService.SaveData(data);
 
         public void SetLeaderboard(string id, int value)
         {
-            if (ConnectionMode != ConnectionMode.Online)
-            {
-                Debug.LogWarning($"Can't access leaderboards in mode: {ConnectionMode}.");
-                return;
-            }
-
+            if (Status != SDKStatus.Active) return;
             YandexService.SetLeaderboard(id, value);
         }
 
         public void ShowFullscreenAdv()
         {
-            if (ConnectionMode != ConnectionMode.Online)
-            {
-                Debug.LogWarning($"Can't show fullscreen adv in mode: {ConnectionMode}.");
-                return;
-            }
-
+            if (Status != SDKStatus.Active) return;
             YandexService.ShowFullscreenAdv();
         }
 
         public void ShowRewardedAdv(Action<int> onRewarded)
         {
-            _onAdvRewarded = onRewarded;
-
-            switch (ConnectionMode)
+            switch (Status)
             {
-                default: OnAdvRewarded(1); break;
-                case ConnectionMode.Offline: OnAdvRewarded(-1); break;
-                case ConnectionMode.Online: YandexService.ShowRewardedAdv(); break;
+                case SDKStatus.Debug: OnVideoAdvRewarded(1); break;
+                case SDKStatus.Inactive: OnVideoAdvRewarded(-1); break;
+                case SDKStatus.Active: YandexService.ShowRewardedAdv(); break;
             }
         }
 
-        private void Initialize()
-        {
-            ConnectionMode = Debug.isDebugBuild
-            ? ConnectionMode.Debug
-            : (ConnectionMode)YandexService.GetConnectionStatus();
+        private void OnDataLoaded(string data) => DataLoaded?.Invoke(data);
+        private void OnDataSaved() => DataSaved?.Invoke();
 
-            PlayerInfo = ConnectionMode == ConnectionMode.Online
-            ? new PlayerInfo(YandexService.GetDevice(), YandexService.GetLanguage())
-            : new PlayerInfo(Application.isMobilePlatform, Application.systemLanguage);
-        }
+        private void OnVideoAdvOpened() => VideoAdvOpened?.Invoke();
+        private void OnVideoAdvRewarded(int result) => VideoAdvRewarded?.Invoke((RewardResult)result);
 
-        private void OnDataSaved()
-        {
-            Debug.Log("Data saved with Yandex SDK.");
-            _onDataSaved?.Invoke();
-            _onDataSaved = null;
-        }
-
-        private void OnDataLoaded(string data)
-        {
-            Debug.Log("Data loaded with Yandex SDK.");
-            _onDataLoaded?.Invoke(data);
-            _onDataLoaded = null;
-        }
-
-        private void OnAdvRewarded(int value)
-        {
-            Debug.Log($"Video adv rewarded with value: {value}.");
-            _onAdvRewarded?.Invoke(value);
-            _onAdvRewarded = null;
-        }
+        private void OnFullscreenAdvOpened() => FullscreenAdvOpened?.Invoke();
+        private void OnFullscreenAdvClosed() => FullscreenAdvClosed?.Invoke();
     }
 }
