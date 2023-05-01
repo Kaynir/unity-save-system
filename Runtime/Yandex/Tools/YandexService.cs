@@ -5,7 +5,7 @@ namespace Kaynir.Yandex.Tools
     public static class YandexService
     {
         [DllImport("__Internal")]
-        public static extern int GetConnectionStatus();
+        public static extern int GetSDKStatus();
 
         [DllImport("__Internal")]
         public static extern string GetDevice();

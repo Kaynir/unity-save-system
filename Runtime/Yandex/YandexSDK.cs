@@ -16,7 +16,7 @@ namespace Kaynir.Yandex
 
             Status = Debug.isDebugBuild
             ? SDKStatus.Debug
-            : (SDKStatus)YandexService.GetConnectionStatus();
+            : (SDKStatus)YandexService.GetSDKStatus();
 
             PlayerInfo = Status == SDKStatus.Active
             ? new PlayerInfo(YandexService.GetDevice(), YandexService.GetLanguage())

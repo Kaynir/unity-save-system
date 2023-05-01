@@ -1,8 +1,8 @@
 mergeInto(LibraryManager.library, {
 
-  GetConnectionStatus: function () {
-    console.log('Connection status:', connectionStatus);
-    return connectionStatus;
+  GetSDKStatus: function () {
+    console.log('SDK status:', sdkStatus);
+    return sdkStatus;
   },
 
   GetDevice: function () {
