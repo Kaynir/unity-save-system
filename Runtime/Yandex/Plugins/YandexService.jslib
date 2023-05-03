@@ -41,14 +41,8 @@ mergeInto(LibraryManager.library, {
   },
 
   SetLeaderboard: function (id, value) {
-    ysdk.isAvailableMethod('leaderboards.setLeaderboardScore').then(result => {
-      if (result === true) {
-        ysdk.getLeaderboards().then(lb => {
-          lb.setLeaderboardScore(UTF8ToString(id), value);
-          console.log('Leaderboard updated.');
-        });
-      };
-    });
+    lb.setLeaderboardScore(UTF8ToString(id), value);
+    console.log('Leaderboard updated.');
   },
 
   ShowFullscreenAdv: function () {
