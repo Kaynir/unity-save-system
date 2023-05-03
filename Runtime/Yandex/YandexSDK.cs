@@ -58,7 +58,7 @@ namespace Kaynir.Yandex
             YandexService.ShowFullscreenAdv();
         }
 
-        public static void ShowRewardedAdv(Action<int> onRewarded)
+        public static void ShowRewardedAdv()
         {
             switch (Status)
             {
