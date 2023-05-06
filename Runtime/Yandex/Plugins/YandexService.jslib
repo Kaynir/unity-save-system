@@ -5,6 +5,11 @@ mergeInto(LibraryManager.library, {
     return sdkStatus;
   },
 
+  GetAuthStatus: function () {
+    console.log('Auth status:', authStatus);
+    return authStatus;
+  },
+
   GetDevice: function () {
     var device = ysdk.deviceInfo.type;
     var bufferSize = lengthBytesUTF8(device) + 1;

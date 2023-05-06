@@ -18,6 +18,8 @@ namespace Kaynir.Yandex
             ? SDKStatus.Debug
             : (SDKStatus)YandexService.GetSDKStatus();
 
+            IsAuthorized = Debug.isDebugBuild ? false : YandexService.GetAuthStatus() == 1;
+
             PlayerInfo = Status == SDKStatus.Active
             ? new PlayerInfo(YandexService.GetDevice(), YandexService.GetLanguage())
             : new PlayerInfo(Application.isMobilePlatform, Application.systemLanguage);
@@ -41,6 +43,7 @@ namespace Kaynir.Yandex
         public static event Action FullscreenAdvClosed;
 
         public static SDKStatus Status { get; private set; }
+        public static bool IsAuthorized { get; private set; }
         public static PlayerInfo PlayerInfo { get; private set; }
 
         public static void LoadData() => YandexService.LoadData();

@@ -8,6 +8,9 @@ namespace Kaynir.Yandex.Tools
         public static extern int GetSDKStatus();
 
         [DllImport("__Internal")]
+        public static extern int GetAuthStatus();
+
+        [DllImport("__Internal")]
         public static extern string GetDevice();
 
         [DllImport("__Internal")]

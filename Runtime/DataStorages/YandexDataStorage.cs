@@ -20,7 +20,7 @@ namespace Kaynir.Saves.DataStorages
 
         public void GetData(Action<string> onComplete)
         {
-            if (YandexSDK.Status != SDKStatus.Active)
+            if (!YandexSDK.IsAuthorized)
             {
                 _defaultStorage.GetData(onComplete);
                 return;
@@ -34,7 +34,7 @@ namespace Kaynir.Saves.DataStorages
 
         public void SetData(string data, Action onComplete)
         {
-            if (YandexSDK.Status != SDKStatus.Active)
+            if (!YandexSDK.IsAuthorized)
             {
                 _defaultStorage.SetData(data, onComplete);
                 return;
