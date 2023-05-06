@@ -10,7 +10,7 @@ namespace Kaynir.Yandex
         #region Initialization
         private static YandexSDK _instance;
 
-        public static void Initialize()
+        public static void Initialize(Action onComplete)
         {
             CreateInstance();
 
@@ -23,6 +23,10 @@ namespace Kaynir.Yandex
             PlayerInfo = Status == SDKStatus.Active
             ? new PlayerInfo(YandexService.GetDevice(), YandexService.GetLanguage())
             : new PlayerInfo(Application.isMobilePlatform, Application.systemLanguage);
+
+            Debug.Log($"Yandex SDK initialized with status: {Status}.");
+            Debug.Log($"Player auth status: {IsAuthorized}.");
+            onComplete?.Invoke();
         }
 
         private static void CreateInstance()
