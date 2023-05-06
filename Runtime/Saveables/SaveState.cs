@@ -50,7 +50,7 @@ namespace Kaynir.Saves.Saveables
         #endregion
 
         #region Json Conversions
-        public string ToJson() => JsonUtility.ToJson(this);
+        public string ToJson() => JsonUtility.ToJson(this, true);
         public static SaveState FromJson(string json) => ParseHelper.ParseJson(json, new SaveState());
         #endregion
     }

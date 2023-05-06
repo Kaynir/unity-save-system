@@ -28,10 +28,9 @@ namespace Kaynir.Saves
 
         public static void Load(Action onComplete)
         {
-            Storage.GetData((json) => 
+            Storage.GetData((data) => 
             {
-                Load(SaveState.FromJson(json),
-                     onComplete);
+                Load(data, onComplete);
             });
         }
 
@@ -39,7 +38,7 @@ namespace Kaynir.Saves
 
         public static void Save(SaveState state, Action onComplete)
         {
-            Storage.SetData(state.ToJson(), () =>
+            Storage.SetData(state, () =>
             {
                 OnStateSaved(onComplete);
             });

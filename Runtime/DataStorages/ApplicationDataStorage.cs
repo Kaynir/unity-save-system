@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Kaynir.Saves.Saveables;
 using UnityEngine;
 
 namespace Kaynir.Saves.DataStorages
@@ -22,23 +23,24 @@ namespace Kaynir.Saves.DataStorages
         public ApplicationDataStorage(bool enableBackup) : this(DEFAULT_FILE_NAME, enableBackup) { }
         public ApplicationDataStorage() : this(DEFAULT_FILE_NAME, false) { }
 
-        public void GetData(Action<string> onComplete)
+        public void GetData(Action<SaveState> onComplete)
         {
             GetData(GetFilePath(_fileName), _enableBackup, onComplete);
         }
 
-        public void SetData(string data, Action onComplete)
+        public void SetData(SaveState data, Action onComplete)
         {
             SetData(data, GetFilePath(_fileName), _enableBackup, onComplete);
         }
 
-        private void GetData(string filePath, bool enableBackup, Action<string> onComplete)
+        private void GetData(string filePath, bool enableBackup, Action<SaveState> onComplete)
         {
-            string json = string.Empty;
+            SaveState data = new SaveState();
 
             try
             {
-                json = File.ReadAllText(filePath);
+                string json = File.ReadAllText(filePath);
+                data = SaveState.FromJson(json);
             }
             catch (Exception ex)
             {
@@ -52,15 +54,15 @@ namespace Kaynir.Saves.DataStorages
                 }
             }
 
-            onComplete?.Invoke(json);
+            onComplete?.Invoke(data);
         }
 
-        private void SetData(string data, string filePath, bool enableBackup, Action onComplete)
+        private void SetData(SaveState data, string filePath, bool enableBackup, Action onComplete)
         {
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-                File.WriteAllText(filePath, data);
+                File.WriteAllText(filePath, data.ToJson());
 
                 onComplete?.Invoke();
 
