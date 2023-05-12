@@ -29,6 +29,6 @@ namespace Kaynir.Yandex.Tools
         public static extern void ShowFullscreenAdv();
 
         [DllImport("__Internal")]
-        public static extern void ShowRewardedAdv();
+        public static extern void ShowRewardedAdv(int reward);
     }
 }

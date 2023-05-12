@@ -68,7 +68,7 @@ mergeInto(LibraryManager.library, {
     });
   },
 
-  ShowRewardedAdv: function () {
+  ShowRewardedAdv: function (reward) {
     ysdk.adv.showRewardedVideo({
       callbacks: {
         onOpen: () => {
@@ -77,16 +77,14 @@ mergeInto(LibraryManager.library, {
         },
         onRewarded: () => {
           console.log('Video adv rewarded.');
-          gameInstance.SendMessage('YandexSDK', 'OnVideoAdvRewarded', 1);
+          gameInstance.SendMessage('YandexSDK', 'OnVideoAdvRewarded', reward);
         },
         onClose: () => {
           console.log('Video adv closed.');
-          gameInstance.SendMessage('YandexSDK', 'OnVideoAdvRewarded', 0);
           gameInstance.SendMessage('YandexSDK', 'OnVideoAdvClosed');
         },
         onError: (error) => {
           console.log('Video adv opened with error:', error);
-          gameInstance.SendMessage('YandexSDK', 'OnVideoAdvRewarded', -1);
         }
       }
     });

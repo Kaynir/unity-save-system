@@ -1,4 +1,3 @@
-using Kaynir.Yandex.Enums;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -8,11 +7,11 @@ namespace Kaynir.Yandex.Modules
     {
         [SerializeField] private UnityEvent _advOpened = new UnityEvent();
         [SerializeField] private UnityEvent _advClosed = new UnityEvent();
-        [SerializeField] private UnityEvent<RewardResult> _advRewarded = new UnityEvent<RewardResult>();
+        [SerializeField] private UnityEvent<int> _advRewarded = new UnityEvent<int>();
 
         public UnityEvent AdvOpened => _advOpened;
         public UnityEvent AdvClosed => _advClosed;
-        public UnityEvent<RewardResult> AdvRewarded => _advRewarded;
+        public UnityEvent<int> AdvRewarded => _advRewarded;
 
         private void OnEnable()
         {
