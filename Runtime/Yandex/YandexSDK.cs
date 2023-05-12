@@ -41,6 +41,7 @@ namespace Kaynir.Yandex
         public static event Action DataSaved;
 
         public static event Action VideoAdvOpened;
+        public static event Action VideoAdvClosed;
         public static event Action<RewardResult> VideoAdvRewarded;
 
         public static event Action FullscreenAdvOpened;
@@ -69,7 +70,7 @@ namespace Kaynir.Yandex
         {
             switch (Status)
             {
-                case SDKStatus.Debug: _instance.OnVideoAdvRewarded(1); break;
+                case SDKStatus.Debug:_instance.OnVideoAdvRewarded(1); break;
                 case SDKStatus.Inactive: _instance.OnVideoAdvRewarded(-1); break;
                 case SDKStatus.Active: YandexService.ShowRewardedAdv(); break;
             }
@@ -79,7 +80,12 @@ namespace Kaynir.Yandex
         private void OnDataSaved() => DataSaved?.Invoke();
 
         private void OnVideoAdvOpened() => VideoAdvOpened?.Invoke();
-        private void OnVideoAdvRewarded(int result) => VideoAdvRewarded?.Invoke((RewardResult)result);
+        private void OnVideoAdvClosed() => VideoAdvClosed?.Invoke();
+        private void OnVideoAdvRewarded(int result)
+        {
+            if (result <= 0) VideoAdvClosed?.Invoke();
+            VideoAdvRewarded?.Invoke((RewardResult)result);
+        }
 
         private void OnFullscreenAdvOpened() => FullscreenAdvOpened?.Invoke();
         private void OnFullscreenAdvClosed() => FullscreenAdvClosed?.Invoke();
