@@ -44,13 +44,17 @@ namespace Kaynir.Saves
             });
         }
 
-        public static void Save(Action onComplete)
+        public static void Save(ISaveable saveable, Action onComplete)
+        {
+            saveable.CaptureState(State);
+            Save(State, onComplete);
+        }
+
+        public static void Save(Action onComplete = null)
         {
             SaveRequested?.Invoke(State);
             Save(State, onComplete);
         }
-
-        public static void Save() => Save(null);
 
         private static void OnStateLoaded(SaveState state, Action onComplete)
         {
