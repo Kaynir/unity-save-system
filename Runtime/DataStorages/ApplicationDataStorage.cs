@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using Kaynir.Saves.Saveables;
-using Kaynir.Saves.Tools;
 using UnityEngine;
 
 namespace Kaynir.Saves.DataStorages
@@ -64,10 +63,6 @@ namespace Kaynir.Saves.DataStorages
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(filePath));
                 File.WriteAllText(filePath, data.ToJson());
-
-#if !UNITY_EDITOR && UNITY_WEBGL
-                WebGLService.UpdateIndexedDB();
-#endif
 
                 onComplete?.Invoke();
 
