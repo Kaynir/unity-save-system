@@ -4,6 +4,9 @@
   "displayName": "Save System",
   "description": "Пакет сохранения игровых данных на базе формата Json.",
   "unity": "2021.3",
+  "dependencies": {
+    "com.kaynir.yandex-games": "https://github.com/Kaynir/yandex-games.git"
+  },
   "keywords": [
     "save system, saves"
   ],
