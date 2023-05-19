@@ -1,9 +1,7 @@
 {
     "name": "Kaynir.Saves",
     "rootNamespace": "Kaynir.Saves",
-    "references": [
-        "GUID:ab204d53ec586a34e9281b75727ad49a"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

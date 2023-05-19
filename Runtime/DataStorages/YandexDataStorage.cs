@@ -1,6 +1,6 @@
 using System;
-using Kaynir.YandexGames;
 using Kaynir.Saves.Saveables;
+using Kaynir.Yandex;
 using UnityEngine;
 
 namespace Kaynir.Saves.DataStorages
@@ -19,7 +19,7 @@ namespace Kaynir.Saves.DataStorages
             _localStorage = localStorage;
         }
 
-        public YandexDataStorage() : this(new WebGLDataStorage()) { }
+        public YandexDataStorage() : this(new ApplicationDataStorage()) { }
 
         public void GetData(Action<SaveState> onComplete)
         {
