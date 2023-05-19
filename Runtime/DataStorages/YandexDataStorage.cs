@@ -10,7 +10,6 @@ namespace Kaynir.Saves.DataStorages
         private const string PLAY_TIME_KEY = "_playTime";
 
         private IDataStorage _localStorage;
-        private YandexSDK _yandexSDK;
 
         private Action<SaveState> _onGetDataComplete;
         private Action _onSetDataComplete;
@@ -18,29 +17,29 @@ namespace Kaynir.Saves.DataStorages
         public YandexDataStorage(IDataStorage localStorage)
         {
             _localStorage = localStorage;
-            _yandexSDK = YandexSDK.Instance;
         }
 
         public YandexDataStorage() : this(new WebGLDataStorage()) { }
 
         public void GetData(Action<SaveState> onComplete)
         {
-            if (!_yandexSDK.Player.isAuthorized)
+            if (!YandexSDK.Player.isAuthorized)
             {
                 _localStorage.GetData(onComplete);
                 return;
             }
 
             _onGetDataComplete = onComplete;
-            _yandexSDK.DataLoaded += OnCloudDataLoaded;
-            _yandexSDK.LoadData();
+
+            YandexSDK.DataLoaded += OnCloudDataLoaded;
+            YandexSDK.LoadData();
         }
 
         public void SetData(SaveState data, Action onComplete)
         {
             UpdatePlayTime(data);
 
-            if (!_yandexSDK.Player.isAuthorized)
+            if (!YandexSDK.Player.isAuthorized)
             {
                 _localStorage.SetData(data, onComplete);
                 return;
@@ -49,13 +48,13 @@ namespace Kaynir.Saves.DataStorages
             _localStorage.SetData(data, null);
             _onSetDataComplete = onComplete;
 
-            _yandexSDK.DataSaved += OnCloudDataSaved;
-            _yandexSDK.SaveData(data.ToJson());
+            YandexSDK.DataSaved += OnCloudDataSaved;
+            YandexSDK.SaveData(data.ToJson());
         }
 
         private void OnCloudDataLoaded(string data)
         {
-            _yandexSDK.DataLoaded -= OnCloudDataLoaded;
+            YandexSDK.DataLoaded -= OnCloudDataLoaded;
 
             _localStorage.GetData((SaveState localData) =>
             {
@@ -68,7 +67,7 @@ namespace Kaynir.Saves.DataStorages
 
         private void OnCloudDataSaved()
         {
-            _yandexSDK.DataSaved -= OnCloudDataSaved;
+            YandexSDK.DataSaved -= OnCloudDataSaved;
 
             _onSetDataComplete?.Invoke();
             _onSetDataComplete = null;
