@@ -20,7 +20,7 @@ namespace Kaynir.Yandex
 
             IsAuthorized = Debug.isDebugBuild ? false : YandexService.GetAuthStatus() == 1;
 
-            PlayerInfo = Status == SDKStatus.Active
+            Player = Status == SDKStatus.Active
             ? new PlayerInfo(YandexService.GetDevice(), YandexService.GetLanguage())
             : new PlayerInfo(Application.isMobilePlatform, Application.systemLanguage);
 
@@ -49,20 +49,20 @@ namespace Kaynir.Yandex
 
         public static SDKStatus Status { get; private set; }
         public static bool IsAuthorized { get; private set; }
-        public static PlayerInfo PlayerInfo { get; private set; }
+        public static PlayerInfo Player { get; private set; }
 
         public static void LoadData() => YandexService.LoadData();
         public static void SaveData(string data) => YandexService.SaveData(data);
 
         public static void SetLeaderboard(string id, int value)
         {
-            if (Status != SDKStatus.Active) return;
+            if (!IsAuthorized) return;
             YandexService.SetLeaderboard(id, value);
         }
 
         public static void ShowFullscreenAdv()
         {
-            if (Status != SDKStatus.Active) return;
+            if (Status == SDKStatus.Debug) return;
             YandexService.ShowFullscreenAdv();
         }
 
@@ -72,12 +72,12 @@ namespace Kaynir.Yandex
             {
                 case SDKStatus.Debug:
                 {
+                    _instance.OnVideoAdvOpened();
                     _instance.OnVideoAdvRewarded(reward);
                     _instance.OnVideoAdvClosed();
                     break;
                 }
-                case SDKStatus.Inactive: _instance.OnVideoAdvClosed(); break;
-                case SDKStatus.Active: YandexService.ShowRewardedAdv(reward); break;
+                default: YandexService.ShowRewardedAdv(reward); break;
             }
         }
 

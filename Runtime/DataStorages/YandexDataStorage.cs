@@ -23,7 +23,7 @@ namespace Kaynir.Saves.DataStorages
 
         public void GetData(Action<SaveState> onComplete)
         {
-            if (!YandexSDK.Player.isAuthorized)
+            if (!YandexSDK.IsAuthorized)
             {
                 _localStorage.GetData(onComplete);
                 return;
@@ -39,7 +39,7 @@ namespace Kaynir.Saves.DataStorages
         {
             UpdatePlayTime(data);
 
-            if (!YandexSDK.Player.isAuthorized)
+            if (!YandexSDK.IsAuthorized)
             {
                 _localStorage.SetData(data, onComplete);
                 return;

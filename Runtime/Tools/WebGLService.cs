@@ -5,6 +5,13 @@ namespace Kaynir.Saves.Tools
     public static class WebGLService
     {
         [DllImport("__Internal")]
-        public static extern void UpdateIndexedDB();
+        private static extern void UpdateIndexedDB();
+
+        public static void UpdateDatabase()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+                WebGLService.UpdateIndexedDB();
+#endif
+        }
     }
 }

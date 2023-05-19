@@ -64,10 +64,7 @@ namespace Kaynir.Saves.DataStorages
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(filePath));
                 File.WriteAllText(filePath, data.ToJson());
-
-#if !UNITY_EDITOR && UNITY_WEBGL
-                WebGLService.UpdateIndexedDB();
-#endif
+                WebGLService.UpdateDatabase();
 
                 onComplete?.Invoke();
 

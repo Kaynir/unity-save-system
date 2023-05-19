@@ -14,7 +14,7 @@ mergeInto(LibraryManager.library, {
     var device = ysdk.deviceInfo.type;
     var bufferSize = lengthBytesUTF8(device) + 1;
     var buffer = _malloc(bufferSize);
-    console.log('Detected device type:', device);
+    console.log('Detected device:', device);
     stringToUTF8(device, buffer, bufferSize);
     return buffer;
   },
@@ -46,8 +46,11 @@ mergeInto(LibraryManager.library, {
   },
 
   SetLeaderboard: function (id, value) {
-    lb.setLeaderboardScore(UTF8ToString(id), value);
-    console.log('Leaderboard updated.');
+    if (authStatus === 1)
+    {
+      lb.setLeaderboardScore(UTF8ToString(id), value);
+      console.log('Leaderboard updated.');
+    }
   },
 
   ShowFullscreenAdv: function () {
