@@ -1,72 +1,70 @@
 using System;
-using Kaynir.Saves.DataStorages;
-using Kaynir.Saves.Saveables;
+using Kaynir.Saves.Storages;
 
 namespace Kaynir.Saves
 {
-    public static class SaveSystem
+    public class SaveSystem
     {
-        public delegate void StateChanged(SaveState state);
+        public delegate void StateAction(DataState state);
 
-        public static event StateChanged SaveRequested;
-        public static event StateChanged StateSaved;
-        public static event StateChanged StateLoaded;
+        public event StateAction StateLoaded;
+        public event StateAction StateSaveRequested;
+        public event StateAction StateSaved;
 
-        public static SaveState State { get; private set; }
-        public static IDataStorage Storage { get; private set; }
+        private DataState dataState;
+        private IStorageService storageService;
 
-        public static void Initialize(IDataStorage storage)
+        public SaveSystem(IStorageService storage)
         {
-            State = new SaveState();
-            Storage = storage;
+            dataState = new DataState();
+            storageService = storage;
         }
 
-        public static void Load(SaveState state, Action onComplete)
+        public void SubscribeSaveable(ISaveableEntity saveable)
         {
-            OnStateLoaded(state, onComplete);
+            saveable.RestoreState(dataState);
+
+            StateLoaded += saveable.RestoreState;
+            StateSaveRequested += saveable.CaptureState;
         }
 
-        public static void Load(Action onComplete)
+        public void UnsubscribeSaveable(ISaveableEntity saveable)
         {
-            Storage.GetData((data) => 
+            StateLoaded -= saveable.RestoreState;
+            StateSaveRequested -= saveable.CaptureState;
+        }
+
+        public void LoadState(DataState state, StateAction onComplete)
+        {
+            dataState = state;
+            onComplete?.Invoke(state);
+            StateLoaded?.Invoke(state);
+        }
+
+        public void LoadState(StateAction onComplete)
+        {
+            storageService.GetData((data) =>
             {
-                Load(data, onComplete);
+                DataState state = DataState.FromJson(data);
+                LoadState(state, onComplete);
             });
         }
 
-        public static void Load() => Load(null);
+        public void LoadState() => LoadState(null);
 
-        public static void Save(SaveState state, Action onComplete)
+        public void SaveState(DataState state, Action<bool> onComplete)
         {
-            Storage.SetData(state, () =>
+            StateSaveRequested?.Invoke(state);
+
+            dataState = state;
+            storageService.SetData(state.ToJson(true), (result) =>
             {
-                OnStateSaved(onComplete);
+                onComplete?.Invoke(result);
+                StateSaved?.Invoke(state);
             });
         }
 
-        public static void Save(ISaveable saveable, Action onComplete)
-        {
-            saveable.CaptureState(State);
-            Save(State, onComplete);
-        }
-
-        public static void Save(Action onComplete = null)
-        {
-            SaveRequested?.Invoke(State);
-            Save(State, onComplete);
-        }
-
-        private static void OnStateLoaded(SaveState state, Action onComplete)
-        {
-            State = state;
-            StateLoaded?.Invoke(State);
-            onComplete?.Invoke();
-        }
-
-        private static void OnStateSaved(Action onComplete)
-        {
-            StateSaved?.Invoke(State);
-            onComplete?.Invoke();
-        }
+        public void SaveState(Action<bool> onComplete) => SaveState(dataState, onComplete);
+        public void SaveState() => SaveState(null);
     }
 }

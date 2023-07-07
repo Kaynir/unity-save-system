@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Kaynir.Saves.Tools
@@ -7,38 +8,29 @@ namespace Kaynir.Saves.Tools
     [Serializable]
     public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
     {
-        [SerializeField] private List<KeyValuePair> _collection;
+        [SerializeField] private List<KeyValuePair> collection;
 
         public void OnAfterDeserialize()
         {
             Clear();
-
-            _collection.ForEach(item => Add(item.Key, item.Value));
+            collection.ForEach(p => this[p.key] = p.value);
         }
 
         public void OnBeforeSerialize()
         {
-            _collection = new List<KeyValuePair>();
-
-            foreach (var item in this)
-            {
-                _collection.Add(new KeyValuePair(item.Key, item.Value));
-            }
+            collection = this.Select(p => new KeyValuePair(p.Key, p.Value)).ToList();
         }
 
         [Serializable]
         private struct KeyValuePair
         {
-            [SerializeField] private TKey _key;
-            [SerializeField] private TValue _value;
-
-            public TKey Key => _key;
-            public TValue Value => _value;
+            public TKey key;
+            public TValue value;
 
             public KeyValuePair(TKey key, TValue value)
             {
-                _key = key;
-                _value = value;
+                this.key = key;
+                this.value = value;
             }
         }
     }

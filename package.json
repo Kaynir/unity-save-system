@@ -2,14 +2,14 @@
   "name": "com.kaynir.saves",
   "version": "1.0.0",
   "displayName": "Save System",
-  "description": "Пакет сохранения игровых данных на базе формата Json.",
-  "unity": "2021.3",
+  "description": "A package to store game data in JSON format.",
+  "unity": "2022.3",
   "keywords": [
     "save system, saves"
   ],
   "author": {
-    "name": "Денис Знов",
+    "name": "Denis Znov",
     "email": "kaynir.games@gmail.com",
-    "url": "https://github.com/Kaynir/save-system"
+    "url": "https://github.com/Kaynir/unity-save-system"
   }
 }

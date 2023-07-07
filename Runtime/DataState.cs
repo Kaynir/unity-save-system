@@ -2,29 +2,28 @@ using System;
 using Kaynir.Saves.Tools;
 using UnityEngine;
 
-namespace Kaynir.Saves.Saveables
+namespace Kaynir.Saves
 {
     [Serializable]
-    public class SaveState
+    public class DataState
     {
-        [SerializeField] private SerializableDictionary<string, string> _data;
+        [SerializeField] private SerializableDictionary<string, string> data;
 
-        public SaveState()
+        public DataState()
         {
-            _data = new SerializableDictionary<string, string>();
+            data = new SerializableDictionary<string, string>();
         }
 
         #region String Data
         public string GetString(string key, string defaultValue)
         {
-            if (_data.TryGetValue(key, out string data)) return data;
-
-            Debug.LogWarning($"Retriving default value for missing key: {key}.");
-            return defaultValue;
+            return data.TryGetValue(key, out string value)
+            ? value
+            : defaultValue;
         }
 
         public string GetString(string key) => GetString(key, string.Empty);
-        public void SetString(string key, string value) => _data[key] = value;
+        public void SetString(string key, string value) => data[key] = value;
         #endregion
 
         #region Integer Data
@@ -41,18 +40,14 @@ namespace Kaynir.Saves.Saveables
 
         #region Custom Data
         public T GetData<T>(string key, T defaultValue) => ParseHelper.ParseJson(GetString(key), defaultValue);
-        public T GetData<T>(T defaultValue) => GetData<T>(GenerateKey<T>(), defaultValue);
         public T GetData<T>(string key) where T : new() => GetData<T>(key, new T());
-        public T GetData<T>() where T : new() => GetData<T>(GenerateKey<T>(), new T());
         public void SetData<T>(string key, T data) => SetString(key, JsonUtility.ToJson(data));
-        public void SetData<T>(T data) => SetData(GenerateKey<T>(), data);
-        private string GenerateKey<T>() => typeof(T).Name;
         #endregion
 
         #region Json Conversions
         public string ToJson(bool prettyPrint) => JsonUtility.ToJson(this, prettyPrint);
         public string ToJson() => ToJson(false);
-        public static SaveState FromJson(string json) => ParseHelper.ParseJson(json, new SaveState());
+        public static DataState FromJson(string json) => ParseHelper.ParseJson(json, new DataState());
         #endregion
     }
 }
