@@ -1,5 +1,5 @@
 {
-  "name": "com.kaynir.saves",
+  "name": "com.kaynir.save-system",
   "version": "1.0.0",
   "displayName": "Save System",
   "description": "A package to store game data in JSON format.",
