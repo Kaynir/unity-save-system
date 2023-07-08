@@ -5,11 +5,9 @@ namespace Kaynir.Saves
 {
     public class SaveSystem
     {
-        public delegate void StateAction(DataState state);
-
-        public event StateAction StateLoaded;
-        public event StateAction StateSaveRequested;
-        public event StateAction StateSaved;
+        public event Action<DataState> StateLoaded;
+        public event Action<DataState> StateSaveRequested;
+        public event Action<DataState, bool> StateSaved;
 
         private DataState dataState;
         private IStorageService storageService;
@@ -34,14 +32,14 @@ namespace Kaynir.Saves
             StateSaveRequested -= saveable.CaptureState;
         }
 
-        public void LoadState(DataState state, StateAction onComplete)
+        public void LoadState(DataState state, Action<DataState> onComplete)
         {
             dataState = state;
             onComplete?.Invoke(state);
             StateLoaded?.Invoke(state);
         }
 
-        public void LoadState(StateAction onComplete)
+        public void LoadState(Action<DataState> onComplete)
         {
             storageService.GetData((data) =>
             {
@@ -60,7 +58,7 @@ namespace Kaynir.Saves
             storageService.SetData(state.ToJson(true), (result) =>
             {
                 onComplete?.Invoke(result);
-                StateSaved?.Invoke(state);
+                StateSaved?.Invoke(state, result);
             });
         }
 
