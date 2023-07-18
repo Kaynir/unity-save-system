@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Kaynir.Saves.Tools;
 using Kaynir.WebGLPlugins.IndexedDB;
+using UnityEngine;
 
 namespace Kaynir.Saves.Storages
 {
@@ -28,7 +29,7 @@ namespace Kaynir.Saves.Storages
             }
             catch (Exception ex)
             {
-                DebugService.LogFileReadException(filePath, ex);
+                Debug.LogWarning($"Failed to read {filePath} with exception: {ex}.");
             }
 
             onComplete?.Invoke(data);
@@ -46,7 +47,7 @@ namespace Kaynir.Saves.Storages
             }
             catch (Exception ex)
             {
-                DebugService.LogFileWriteException(filePath, ex);
+                Debug.LogWarning($"Failed to write {filePath} with exception: {ex}.");
                 onComplete?.Invoke(false);
             }
         }

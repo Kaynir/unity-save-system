@@ -29,14 +29,14 @@ namespace Kaynir.Saves.Tools
             {
                 if (string.IsNullOrEmpty(s))
                 {
-                    DebugService.ThrowEmptyStringParseException();
+                    throw new Exception("Unable to parse empty string.");
                 }
 
                 return JsonUtility.FromJson<T>(s);
             }
             catch (Exception ex)
             {
-                DebugService.LogJsonParseException(ex);
+                Debug.LogWarning($"Failed to parse JSON with exception: {ex}.");
                 return defaultValue;
             }
         }
